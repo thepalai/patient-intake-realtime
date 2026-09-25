@@ -3,6 +3,7 @@
 create table public.patient_intakes (
   id uuid primary key default gen_random_uuid(),
   first_name text,
+  middle_name text,
   last_name text,
   phone_number text,
   created_at timestamptz not null default now(),
@@ -26,3 +27,23 @@ for update to anon using (true) with check (true);
 
 -- For staff to read realtime.
 alter publication supabase_realtime add table public.patient_intakes;
+
+-- The column default only sets updated_at on insert; this stamps every update too.
+-- It uses the database clock, not the patient's phone, so the staff view can tell
+-- who is still typing.
+create function public.set_updated_at()
+returns trigger
+language plpgsql
+-- Stop the function from picking up a look-alike now() from a different schema.
+set search_path = ''
+as $$
+begin
+  new.updated_at := now();
+  return new;
+end;
+$$;
+
+-- BEFORE, so the new time is set on the row before it is written to the table.
+create trigger patient_intakes_updated_at
+before update on public.patient_intakes
+for each row execute function public.set_updated_at();
