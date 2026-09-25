@@ -1,69 +1,45 @@
-import Image from "next/image";
+import Link from 'next/link';
 
-export default function Home() {
+// Nobody has picked a language yet, so this page speaks Thai first and
+// English second. In a clinic, a QR code or kiosk would open /patient directly.
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.js
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="flex flex-1 flex-col bg-white sm:items-center sm:justify-center sm:bg-slate-50 sm:px-6">
+      <div className="flex flex-1 flex-col px-6 py-10 sm:w-full sm:max-w-md sm:flex-none sm:rounded-2xl sm:bg-white sm:p-10 sm:shadow-sm sm:ring-1 sm:ring-slate-200">
+        <h1 className="text-4xl font-bold text-slate-900">ยินดีต้อนรับ</h1>
+        <p lang="en" className="mt-1 text-xl text-slate-600">
+          Welcome
+        </p>
+        <p className="mt-6 text-slate-700">
+          แผนกผู้ป่วยนอก{' '}
+          <span lang="en" className="text-slate-500">
+            Outpatient department
+          </span>
+        </p>
+
+        {/* On a phone the main action sits low, where a thumb reaches it. */}
+        <div className="mt-auto pt-12 sm:mt-10 sm:pt-0">
+          <Link
+            href="/patient"
+            className="block rounded-xl bg-blue-700 px-6 py-4 text-white hover:bg-blue-800 focus-visible:ring-4 focus-visible:ring-blue-300 focus-visible:outline-hidden"
+          >
+            <span className="block text-xl font-semibold">เริ่มลงทะเบียน</span>
+            <span lang="en" className="block text-blue-100">
+              Start registration
+            </span>
+          </Link>
+          <p className="mt-3 text-center text-sm text-slate-600">
+            ใช้เวลาประมาณ 5 นาที <span lang="en">(about 5 minutes)</span>
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+          <Link
+            href="/staff"
+            className="mt-10 block rounded text-center text-slate-700 underline underline-offset-4 hover:text-slate-900 focus-visible:ring-4 focus-visible:ring-blue-300 focus-visible:outline-hidden"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            สำหรับเจ้าหน้าที่ <span lang="en">(staff view)</span>
+          </Link>
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
