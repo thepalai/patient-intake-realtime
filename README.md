@@ -1,4 +1,4 @@
-# Patient Intake — Real-time Form & Staff View
+# OPD Check-in
 
 A patient fills in an intake form on their own device while staff watch each field arrive live on another screen, with a status for every patient: **filling in**, **inactive** or **submitted**.
 
@@ -167,6 +167,11 @@ Three lines at the end of each step.
 - **Did:** a patient form (names and phone) that saves itself as the patient types, a staff waiting room whose cards update live, a landing page, and a trigger that keeps `updated_at` current.
 - **Decided:** the browser creates each row's UUID, so every save is the same upsert, sent one at a time with retries; the staff view loads on open and after every reconnect, and keeps whichever copy of a row is newer.
 - **Verified:** on the live URL, one row per patient (an INSERT, then UPDATEs); locally, cards appear in queue order, update and disappear live; eslint and the production build pass.
+
+**Day 3 — the full form and the staff view**
+- **Did:** the four-step patient form with validation, a review page and submit; a language page with a Thai/English switch; and a staff view that shows each patient's step, time on it and status, and folds away submitted and abandoned cards over time.
+- **Decided:** every time on screen comes from the database clock (triggers) and one page clock, so no card runs a timer of its own; email is optional, because the brief asks for email validation where applicable and many older patients have no email; cards leave the staff view 24 hours after their last change rather than at midnight, because a hospital runs through the night.
+- **Verified:** on the live URL, the staff view recovered after the laptop's Wi-Fi dropped, and a phone number typed while it was offline appeared without a refresh; back and forward move between steps without losing answers; switching language keeps every answer, including the birth year across calendars.
 
 ## How I built this
 
