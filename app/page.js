@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { LogoMark } from '@/components/LogoMark';
 
 // Nobody has picked a language yet, so this page speaks Thai first and
 // English second. In a clinic, a QR code or kiosk would open /patient directly.
@@ -6,6 +7,10 @@ export default function HomePage() {
   return (
     <main className="flex flex-1 flex-col bg-white sm:items-center sm:justify-center sm:bg-slate-50 sm:px-6">
       <div className="flex flex-1 flex-col px-6 py-10 sm:w-full sm:max-w-md sm:flex-none sm:rounded-2xl sm:bg-white sm:p-10 sm:shadow-sm sm:ring-1 sm:ring-slate-200">
+        <p lang="en" className="mb-8 flex items-center gap-2 text-lg font-semibold text-blue-800">
+          <LogoMark className="size-8" />
+          OPD Check-in
+        </p>
         <h1 className="text-4xl font-bold text-slate-900">ยินดีต้อนรับ</h1>
         <p lang="en" className="mt-1 text-xl text-slate-600">
           Welcome

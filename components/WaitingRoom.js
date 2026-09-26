@@ -1,6 +1,7 @@
 'use client';
 
 import { IntakeCard } from '@/components/IntakeCard';
+import { LogoMark } from '@/components/LogoMark';
 import { LiveBadge } from '@/components/LiveBadge';
 import {
   SUBMITTED_IN_VIEW_MS,
@@ -45,6 +46,10 @@ export function WaitingRoom() {
       <header className="border-b border-slate-200 bg-white">
         <div className="flex items-center justify-between gap-4 px-4 py-4 sm:px-8">
           <div>
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-blue-800">
+              <LogoMark className="size-5" />
+              OPD Check-in
+            </p>
             <h1 className="text-2xl font-bold text-slate-900">Waiting room</h1>
             {loaded && (
               <p className="text-sm text-slate-600">

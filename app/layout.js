@@ -11,10 +11,11 @@ const plexThaiLooped = IBM_Plex_Sans_Thai_Looped({
 
 export const metadata = {
   title: {
-    default: 'Patient intake',
-    template: '%s | Patient intake',
+    default: 'OPD Check-in',
+    template: '%s | OPD Check-in',
   },
-  description: 'A patient registration form that staff can watch in real time.',
+  description:
+    'Outpatient check-in: patients fill in a form on their own device while staff watch each answer arrive live.',
 };
 
 export default function RootLayout({ children }) {

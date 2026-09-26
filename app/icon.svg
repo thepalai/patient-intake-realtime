@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- OPD Check-in: a plus split by a heartbeat line, dark blue above (the site's blue-700), lighter below (blue-400). -->
+  <defs>
+    <clipPath id="above-the-line">
+      <path d="M0 0H32V16H20L17.5 8.5L14 20.5L11.5 13L9.5 16H0Z" />
+    </clipPath>
+  </defs>
+  <!-- A white tile keeps the dark half visible on a dark tab bar. -->
+  <rect width="32" height="32" rx="7" fill="#ffffff" />
+  <g fill="#51a2ff">
+    <rect x="11" y="3" width="10" height="26" rx="2.5" />
+    <rect x="3" y="11" width="26" height="10" rx="2.5" />
+  </g>
+  <g fill="#1447e6" clip-path="url(#above-the-line)">
+    <rect x="11" y="3" width="10" height="26" rx="2.5" />
+    <rect x="3" y="11" width="26" height="10" rx="2.5" />
+  </g>
+  <path d="M1 16H9.5L11.5 13L14 20.5L17.5 8.5L20 16H31" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
