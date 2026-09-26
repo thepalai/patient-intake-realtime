@@ -3,14 +3,16 @@
 import { IntakeCard } from '@/components/IntakeCard';
 import { LiveBadge } from '@/components/LiveBadge';
 import { useLiveIntakes } from '@/lib/useLiveIntakes';
+import { useNow } from '@/lib/useNow';
 
 export function WaitingRoom() {
   const { intakes, connection, loaded, error } = useLiveIntakes();
+  const now = useNow(); // ticks every second, so statuses update without new data
 
   return (
     <main lang="en" className="flex-1 bg-slate-50">
       <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-8">
+        <div className="flex items-center justify-between gap-4 px-4 py-4 sm:px-8">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Waiting room</h1>
             {loaded && (
@@ -23,8 +25,9 @@ export function WaitingRoom() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-8">
-        <IntakeList intakes={intakes} loaded={loaded} error={error} />
+      {/* No maximum width: a large monitor in the waiting area fits more cards. */}
+      <div className="px-4 py-6 sm:px-8">
+        <IntakeList intakes={intakes} loaded={loaded} error={error} now={now} />
       </div>
     </main>
   );
@@ -32,7 +35,7 @@ export function WaitingRoom() {
 
 // Early returns keep one state per line: error, then loading, then empty.
 // Once patients have loaded, a failed reload keeps the cards on screen.
-function IntakeList({ intakes, loaded, error }) {
+function IntakeList({ intakes, loaded, error, now }) {
   if (!loaded && error) {
     return (
       <Notice
@@ -53,10 +56,13 @@ function IntakeList({ intakes, loaded, error }) {
     );
   }
   return (
-    <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+    // One column on a phone, up to five on a 1920px monitor. The last
+    // breakpoint is in rem (120rem = 1920px) like the built-in ones, so
+    // Tailwind orders it after them and it wins on a wide screen.
+    <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 min-[120rem]:grid-cols-5">
       {intakes.map((intake) => (
         <li key={intake.id}>
-          <IntakeCard intake={intake} />
+          <IntakeCard intake={intake} now={now} />
         </li>
       ))}
     </ul>

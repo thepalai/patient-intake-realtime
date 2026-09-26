@@ -1,5 +1,7 @@
+import { IntakeStatus, STATUS_STYLES } from '@/components/IntakeStatus';
 import { FIELDS, STEPS } from '@/lib/fields';
 import { ageInYears, displayAnswer } from '@/lib/intakeRow';
+import { intakeStatus } from '@/lib/intakeStatus';
 
 const timeOnly = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' });
 const dayAndTime = new Intl.DateTimeFormat('en-GB', {
@@ -9,12 +11,12 @@ const dayAndTime = new Intl.DateTimeFormat('en-GB', {
   minute: '2-digit',
 });
 
-// "Started 21:08" is unclear once a card is from another day, so older
-// cards show the date too.
-function startedAt(iso) {
-  const started = new Date(iso);
-  const isToday = started.toDateString() === new Date().toDateString();
-  return (isToday ? timeOnly : dayAndTime).format(started);
+// "Started 21:08" is unclear once a card is from another day, so times from
+// other days show the date too.
+function clockTime(iso) {
+  const time = new Date(iso);
+  const isToday = time.toDateString() === new Date().toDateString();
+  return (isToday ? timeOnly : dayAndTime).format(time);
 }
 
 // What staff read for one field: codes become English words, and a birth
@@ -27,20 +29,35 @@ function answerText(field, intake) {
   return text;
 }
 
-export function IntakeCard({ intake }) {
+// `now` is the page's clock, so the status moves on by itself when a
+// patient stops typing.
+export function IntakeCard({ intake, now }) {
   const name = [intake.first_name, intake.middle_name, intake.last_name]
     .filter(Boolean)
     .join(' ');
+  const status = intakeStatus(intake, now);
 
   return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-5">
-      <header>
-        <h2 className="text-lg font-semibold break-words text-slate-900">
-          {name || 'New patient'}
-        </h2>
-        <p className="text-sm text-slate-600">
-          Started <time dateTime={intake.created_at}>{startedAt(intake.created_at)}</time>
-        </p>
+    <article
+      className={`rounded-2xl border border-t-4 border-slate-200 bg-white p-5 ${STATUS_STYLES[status.kind].edge}`}
+    >
+      {/* Name on the left, status on the right, like the page header with
+          its Live badge. A long name wraps; the status keeps its size. */}
+      <header className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-lg font-semibold break-words text-slate-900">
+            {name || 'New patient'}
+          </h2>
+          <p className="text-sm text-slate-600">
+            Started <time dateTime={intake.created_at}>{clockTime(intake.created_at)}</time>
+          </p>
+        </div>
+        <div className="shrink-0">
+          <IntakeStatus
+            status={status}
+            submittedAt={intake.submitted_at && clockTime(intake.submitted_at)}
+          />
+        </div>
       </header>
 
       {/* Every field, grouped by the step the patient fills it in. */}
