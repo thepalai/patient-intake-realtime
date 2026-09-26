@@ -1,10 +1,12 @@
 # OPD Check-in
 
+[![CI](https://github.com/thepalai/patient-intake-realtime/actions/workflows/ci.yml/badge.svg)](https://github.com/thepalai/patient-intake-realtime/actions/workflows/ci.yml)
+
 A patient fills in an intake form on their own device while staff watch each field arrive live on another screen, with a status for every patient: **filling in**, **inactive** or **submitted**.
 
 Built for the Agnos Health front-end take-home.
 
-- **Live:** https://patient-intake-realtime-one.vercel.app
+- **Live:** https://opdcheck-in.vercel.app
 - **Try it** _(in progress)_: open `/patient` on a phone and `/staff` on a laptop, then start typing.
 
 > **Work in progress.** Sections marked _TODO_ are filled in as each step lands.
