@@ -6,6 +6,23 @@ create table public.patient_intakes (
   middle_name text,
   last_name text,
   phone_number text,
+  -- The other form fields are nullable for the same reason. Choices hold
+  -- short English codes (e.g. 'female', 'th'); lib/fields.js has the labels.
+  date_of_birth date,
+  gender text,
+  nationality text,
+  preferred_language text,
+  religion text,
+  email text,
+  address text,
+  emergency_contact_name text,
+  emergency_contact_relationship text,
+  emergency_contact_phone text,
+  -- Progress for the staff view: the step the patient is on (4 = checking
+  -- their answers), when they reached it, and when they submitted.
+  current_step smallint not null default 1,
+  step_started_at timestamptz not null default now(),
+  submitted_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -47,3 +64,29 @@ $$;
 create trigger patient_intakes_updated_at
 before update on public.patient_intakes
 for each row execute function public.set_updated_at();
+
+-- Stamps the progress times with the database clock too. The form sends the
+-- step number and, on submit, any time for submitted_at; this sets the times.
+create function public.stamp_intake_progress()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  -- A new step restarts the time-in-step clock.
+  if new.current_step is distinct from old.current_step then
+    new.step_started_at := now();
+  end if;
+  -- Submitted once: the first submission time stays, whatever is sent later.
+  if old.submitted_at is not null then
+    new.submitted_at := old.submitted_at;
+  elsif new.submitted_at is not null then
+    new.submitted_at := now();
+  end if;
+  return new;
+end;
+$$;
+
+create trigger patient_intakes_progress
+before update on public.patient_intakes
+for each row execute function public.stamp_intake_progress();
