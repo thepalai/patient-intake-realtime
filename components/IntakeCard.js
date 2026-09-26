@@ -45,9 +45,9 @@ export function IntakeCard({ intake, now }) {
           its Live badge. A long name wraps; the status keeps its size. */}
       <header className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="text-lg font-semibold break-words text-slate-900">
+          <h3 className="text-lg font-semibold break-words text-slate-900">
             {name || 'New patient'}
-          </h2>
+          </h3>
           <p className="text-sm text-slate-600">
             Started <time dateTime={intake.created_at}>{clockTime(intake.created_at)}</time>
           </p>
