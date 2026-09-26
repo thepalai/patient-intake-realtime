@@ -1,17 +1,19 @@
-import { formatIdle } from '@/lib/intakeStatus';
+import { REVIEW_STEP } from '@/lib/fields';
+import { formatDuration } from '@/lib/intakeStatus';
 
 // Blue: still filling in. Amber: gone quiet. Green: submitted, and only then.
 // The words say the same thing, so colour is never the only signal.
 export const STATUS_STYLES = {
-  filling: { dot: 'bg-blue-600', pill: 'border-blue-200 bg-blue-50 text-blue-900', edge: 'border-t-blue-600' },
-  inactive: { dot: 'bg-amber-500', pill: 'border-amber-200 bg-amber-50 text-amber-900', edge: 'border-t-amber-500' },
-  submitted: { dot: 'bg-green-700', pill: 'border-green-200 bg-green-50 text-green-900', edge: 'border-t-green-700' },
+  filling: { dot: 'bg-blue-600', pill: 'border-blue-200 bg-blue-50 text-blue-900', fill: 'bg-blue-600' },
+  inactive: { dot: 'bg-amber-500', pill: 'border-amber-200 bg-amber-50 text-amber-900', fill: 'bg-amber-500' },
+  submitted: { dot: 'bg-green-700', pill: 'border-green-200 bg-green-50 text-green-900', fill: 'bg-green-700' },
 };
 
+// While filling in or inactive, the time shown is the time on the current step.
 function label(status, submittedAt) {
   if (status.kind === 'submitted') return `Submitted ${submittedAt}`;
-  if (status.kind === 'inactive') return `Inactive · ${formatIdle(status.idleMs)}`;
-  return 'Filling in';
+  if (status.kind === 'inactive') return `Inactive · ${formatDuration(status.stepMs)}`;
+  return `Filling in · ${formatDuration(status.stepMs)}`;
 }
 
 export function IntakeStatus({ status, submittedAt }) {
@@ -23,5 +25,21 @@ export function IntakeStatus({ status, submittedAt }) {
       <span aria-hidden="true" className={`size-2.5 shrink-0 rounded-full ${style.dot}`} />
       {label(status, submittedAt)}
     </p>
+  );
+}
+
+// The strip along the top of a card: one segment per step, filled in the
+// status colour up to the step the patient is on, all four once submitted.
+export function ProgressStrip({ status, step }) {
+  const filled = status.kind === 'submitted' ? REVIEW_STEP : step;
+  return (
+    <div aria-hidden="true" className="flex gap-1">
+      {Array.from({ length: REVIEW_STEP }, (_, index) => (
+        <div
+          key={index}
+          className={`h-1.5 flex-1 ${index < filled ? STATUS_STYLES[status.kind].fill : 'bg-slate-200'}`}
+        />
+      ))}
+    </div>
   );
 }
