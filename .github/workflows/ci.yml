@@ -1,0 +1,35 @@
+# Checks every push: install exactly what package-lock.json lists, then lint,
+# run the unit tests and build, in that order. The first step that fails stops
+# the run, and GitHub marks the commit with a red cross.
+name: CI
+
+on: push
+
+# The workflow only reads the code, so its access token can only read.
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    # A normal run takes a couple of minutes; stop one that hangs well before
+    # GitHub's six-hour default.
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          # The same major version as Vercel (Project Settings → Node.js Version).
+          node-version: 24
+          # Keep downloaded packages between runs, so installs are faster.
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+        # The Supabase client is created when a page's code loads, so the build
+        # needs these two values to exist, but nothing talks to Supabase while
+        # building. Placeholders keep real keys out of GitHub.
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_placeholder
