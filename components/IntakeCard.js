@@ -50,8 +50,9 @@ export function IntakeCard({ intake, now }) {
   const canClose = status.kind === 'submitted' && submittedFor(intake, now) >= SUBMITTED_OPEN_MS;
   const open = !canClose || (openedAt !== null && now - openedAt < OPENED_FOR_MS);
 
+  // The card fades in where it appears, unless the device asks for less motion.
   return (
-    <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+    <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white motion-safe:animate-fade-in">
       <ProgressStrip status={status} step={intake.current_step} />
       <div className="p-5">
         {/* Name on the left, status on the right, like the page header with

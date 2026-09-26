@@ -1,5 +1,5 @@
 import { REVIEW_STEP } from '@/lib/fields';
-import { formatDuration } from '@/lib/intakeStatus';
+import { statusLabel } from '@/lib/intakeStatus';
 
 // Blue: still filling in. Amber: gone quiet. Green: submitted, and only then.
 // The words say the same thing, so colour is never the only signal.
@@ -9,13 +9,6 @@ export const STATUS_STYLES = {
   submitted: { dot: 'bg-green-700', pill: 'border-green-200 bg-green-50 text-green-900', fill: 'bg-green-700' },
 };
 
-// While filling in or inactive, the time shown is the time on the current step.
-function label(status, submittedAt) {
-  if (status.kind === 'submitted') return `Submitted ${submittedAt}`;
-  if (status.kind === 'inactive') return `Inactive · ${formatDuration(status.stepMs)}`;
-  return `Filling in · ${formatDuration(status.stepMs)}`;
-}
-
 export function IntakeStatus({ status, submittedAt }) {
   const style = STATUS_STYLES[status.kind];
   return (
@@ -23,7 +16,7 @@ export function IntakeStatus({ status, submittedAt }) {
       className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-semibold ${style.pill}`}
     >
       <span aria-hidden="true" className={`size-2.5 shrink-0 rounded-full ${style.dot}`} />
-      {label(status, submittedAt)}
+      {statusLabel(status, submittedAt)}
     </p>
   );
 }
