@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 
 // Long enough to read the message, short enough that the next person on a
@@ -12,6 +13,7 @@ const TEXT = {
     en: 'This screen clears for the next person in 30 seconds.',
   },
   again: { th: 'เริ่มใหม่สำหรับคนถัดไป', en: 'Start again for the next person' },
+  home: { th: 'กลับหน้าแรก', en: 'Back to the start page' },
 };
 
 export function ThankYou({ lang, onRestart }) {
@@ -40,6 +42,14 @@ export function ThankYou({ lang, onRestart }) {
       >
         {TEXT.again[lang]}
       </button>
+      <p className="mt-6">
+        <Link
+          href="/"
+          className="rounded text-lg text-blue-700 underline underline-offset-4 hover:text-blue-900 focus-visible:ring-4 focus-visible:ring-blue-300 focus-visible:outline-hidden"
+        >
+          {TEXT.home[lang]}
+        </Link>
+      </p>
     </div>
   );
 }
