@@ -60,13 +60,12 @@ export function IntakeCard({ intake, now }) {
         </div>
       </header>
 
-      {/* Every field, grouped by the step the patient fills it in. */}
+      {/* Every field, grouped by the step the patient fills it in. A thicker
+          line marks each group instead of a heading, which keeps cards short on
+          a busy screen; the label still names the group for screen readers. */}
       {STEPS.map((step) => (
-        <section key={step.id} aria-label={step.title.en} className="mt-4">
-          <h3 className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
-            {step.title.en}
-          </h3>
-          <dl className="mt-1 divide-y divide-slate-100 border-t border-slate-100">
+        <section key={step.id} aria-label={step.title.en} className="mt-3 border-t-2 border-slate-200">
+          <dl className="divide-y divide-slate-100">
             {FIELDS.filter((field) => field.step === step.id).map((field) => (
               <div key={field.name} className="grid grid-cols-[8rem_1fr] gap-3 py-1.5">
                 <dt className="text-sm text-slate-600">{field.label.en}</dt>
