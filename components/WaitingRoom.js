@@ -2,7 +2,13 @@
 
 import { IntakeCard } from '@/components/IntakeCard';
 import { LiveBadge } from '@/components/LiveBadge';
-import { SUBMITTED_IN_VIEW_MS, isSetAside, isShown, submittedFor } from '@/lib/intakeStatus';
+import {
+  SUBMITTED_IN_VIEW_MS,
+  SUBMITTED_OPEN_MS,
+  isSetAside,
+  isShown,
+  submittedFor,
+} from '@/lib/intakeStatus';
 import { useLiveIntakes } from '@/lib/useLiveIntakes';
 import { useNow } from '@/lib/useNow';
 
@@ -15,9 +21,15 @@ function groupIntakes(intakes, now) {
   const submitted = shown
     .filter((intake) => intake.submitted_at)
     .sort((a, b) => Date.parse(a.submitted_at) - Date.parse(b.submitted_at));
+  const recent = submitted.filter((intake) => submittedFor(intake, now) < SUBMITTED_IN_VIEW_MS);
   return {
     inProgress: shown.filter((intake) => !intake.submitted_at && !isSetAside(intake, now)),
-    submittedRecently: submitted.filter((intake) => submittedFor(intake, now) < SUBMITTED_IN_VIEW_MS),
+    // Closed-up cards and just-submitted, open ones sit in separate grids: in
+    // one grid, a short card next to a tall one leaves a gap below it on a
+    // wide screen. The split is by time, not by whether a card is open, so a
+    // card staff open by hand stays where it is.
+    submittedClosed: recent.filter((intake) => submittedFor(intake, now) >= SUBMITTED_OPEN_MS),
+    submittedJustNow: recent.filter((intake) => submittedFor(intake, now) < SUBMITTED_OPEN_MS),
     submittedEarlier: submitted.filter((intake) => submittedFor(intake, now) >= SUBMITTED_IN_VIEW_MS),
     setAside: shown.filter((intake) => isSetAside(intake, now)),
   };
@@ -37,7 +49,10 @@ export function WaitingRoom() {
             {loaded && (
               <p className="text-sm text-slate-600">
                 {groups.inProgress.length} in progress ·{' '}
-                {groups.submittedRecently.length + groups.submittedEarlier.length} submitted
+                {groups.submittedClosed.length +
+                  groups.submittedJustNow.length +
+                  groups.submittedEarlier.length}{' '}
+                submitted
               </p>
             )}
           </div>
@@ -56,7 +71,7 @@ export function WaitingRoom() {
 // Early returns keep one state per line: error, then loading, then empty.
 // Once patients have loaded, a failed reload keeps the cards on screen.
 function IntakeList({ groups, loaded, error, now }) {
-  const { inProgress, submittedRecently, submittedEarlier, setAside } = groups;
+  const { inProgress, submittedClosed, submittedJustNow, submittedEarlier, setAside } = groups;
   if (!loaded && error) {
     return (
       <Notice
@@ -68,7 +83,9 @@ function IntakeList({ groups, loaded, error, now }) {
   if (!loaded) {
     return <Notice title="Loading patients…" />;
   }
-  if (inProgress.length + submittedRecently.length + submittedEarlier.length + setAside.length === 0) {
+  const total =
+    inProgress.length + submittedClosed.length + submittedJustNow.length + submittedEarlier.length + setAside.length;
+  if (total === 0) {
     return (
       <Notice
         title="No patients yet"
@@ -78,10 +95,11 @@ function IntakeList({ groups, loaded, error, now }) {
   }
   return (
     <div className="space-y-10">
-      <Section title="In progress" intakes={inProgress} now={now} empty="No one is filling in the form right now." />
+      <Section title="In progress" grids={[inProgress]} now={now} empty="No one is filling in the form right now." />
+      {/* Oldest first, so the closed-up cards come before the newest, open ones. */}
       <Section
         title="Submitted in the last hour"
-        intakes={submittedRecently}
+        grids={[submittedClosed, submittedJustNow]}
         now={now}
         empty="Submitted forms appear here, first to finish first."
       />
@@ -117,16 +135,23 @@ function Folded({ title, intakes, now, note }) {
 }
 
 // A heading with a count, so staff can tell at a glance how many patients are
-// at each stage.
-function Section({ title, intakes, now, empty }) {
+// at each stage. A section can hold more than one grid, one after another.
+function Section({ title, grids, now, empty }) {
   const headingId = `${title.toLowerCase().replace(/\s+/g, '-')}-heading`;
+  const count = grids.reduce((sum, intakes) => sum + intakes.length, 0);
   return (
     <section aria-labelledby={headingId}>
       <h2 id={headingId} className="mb-4 text-lg font-semibold text-slate-700">
-        {title} ({intakes.length})
+        {title} ({count})
       </h2>
-      {intakes.length > 0 ? (
-        <CardGrid intakes={intakes} now={now} />
+      {count > 0 ? (
+        <div className="space-y-6">
+          {/* Each grid keeps its place in the list as its key, so a card
+              staff opened keeps its state when another grid empties. */}
+          {grids.map(
+            (intakes, index) => intakes.length > 0 && <CardGrid key={index} intakes={intakes} now={now} />,
+          )}
+        </div>
       ) : (
         <p className="text-slate-600">{empty}</p>
       )}
